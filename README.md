@@ -1,28 +1,62 @@
 # macOS Login, Startup and User Profile Troubleshooter
 
-A read-only Bash toolkit for collecting login items, background items, launch agents, home-folder permissions, user profile storage, cache size, startup state, and recent login-window evidence.
+A macOS support toolkit for diagnosing and repairing common login, startup-item and user-profile problems.
 
-## Usage
+## Diagnostic script
 
 ```bash
 chmod +x src/login_profile_troubleshooter.sh
 ./src/login_profile_troubleshooter.sh --hours 24
 ```
 
-## Checks performed
+The diagnostic script checks login and background items, LaunchAgents and LaunchDaemons, home-folder ownership and storage, startup indicators, console-user information and recent profile events.
 
-- Login and background items
-- User and system LaunchAgents and LaunchDaemons
-- Home-folder ownership, permissions, and free space
-- User cache and preference storage sizes
-- Current console user, shell, and login history
-- Safe-mode and startup indicators
-- Recent loginwindow, launchservices, background-task, and profile events
-- Text, CSV, and JSON reports
+## Repair script
 
-## Safety
+Preview the standard repair:
 
-The script does not remove login items, clear caches, reset preferences, change permissions, disable extensions, or modify the user profile.
+```bash
+chmod +x src/login_profile_repair.sh
+./src/login_profile_repair.sh --repair --dry-run
+```
+
+Apply the standard repair:
+
+```bash
+./src/login_profile_repair.sh --repair
+```
+
+Reset standard user permissions:
+
+```bash
+./src/login_profile_repair.sh --reset-user-permissions
+```
+
+Rebuild Launch Services registration:
+
+```bash
+./src/login_profile_repair.sh --rebuild-launchservices
+```
+
+Back up and disable one user LaunchAgent:
+
+```bash
+./src/login_profile_repair.sh \
+  --disable-agent "$HOME/Library/LaunchAgents/com.example.agent.plist"
+```
+
+## What the repair does
+
+- Restarts user preference, background-item and login helper processes.
+- Can run `diskutil resetUserPermissions` for the selected user.
+- Can rebuild Launch Services application registration.
+- Can validate, unload, back up and disable one user LaunchAgent.
+- Supports dry-run, confirmation controls, backups, logging and post-repair verification.
+- Returns clear success, warning and invalid-argument exit codes.
+
+## Safety and limitations
+
+The tool does not delete the user profile or remove documents. LaunchAgents are moved into the report backup folder instead of being deleted. Permission repair is limited to the supported `diskutil` operation. Problems caused by damaged user databases, FileVault issues or unavailable network accounts may require separate investigation.
 
 ## Author
 
